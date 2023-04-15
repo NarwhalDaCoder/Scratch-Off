@@ -105,9 +105,13 @@
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>
+                    <!-- Add an element to display the square root indicator -->
+
                     <div id="amountHelpBlock" class="form-text">
-                        The amount fields should be a whole number greater than or equal to 1
+                        The amount fields should be a whole number greater than or equal to 1.
+                        The amounts should add up to a square root up to 400 characters.
                     </div>
+                    <div id="squareRootIndicator" class="form-text">Total is Square Root?</div>
 
                     <label>Seed to Generate Random Game</label>
                     <div id="inputSeedGroup" class="d-flex" aria-labelledby="seedHelpBlock">
@@ -251,7 +255,38 @@
             inputCurrencyGroup.removeChild(inputCurrencyGroup.lastChild);
             inputAmountGroup.removeChild(inputAmountGroup.lastChild);
         });
+        // Get references to the input elements and the square root indicator element
+        var inputs = document.querySelectorAll('#inputAmountGroup input');
+        var squareRootIndicator = document.querySelector('#squareRootIndicator');
 
+        // Add an event listener to each input element to update the square root indicator as the user types
+        inputs.forEach((input) => {
+            input.addEventListener('input', () => {
+                // Get the current values of all input elements
+                var amountValues = Array.from(inputs).map((input) => input.value);
+
+                // Calculate the total of all amount values
+                let totalAmount = amountValues.reduce((total, value) => total + parseInt(value), 0);
+
+                // Check if all amount values are in the correct format and if the total of all amount values is a square root
+                var isValid = true;
+                amountValues.forEach((value) => {
+                    if (value === "" || isNaN(value) || !Number.isInteger(parseFloat(value)) || parseInt(value) < 1) {
+                        isValid = false;
+                    }
+                });
+                if (isValid && (!Number.isInteger(Math.sqrt(totalAmount)) || totalAmount > 400)) {
+                    isValid = false;
+                }
+
+                // Update the square root indicator
+                if (isValid) {
+                    squareRootIndicator.textContent = '✔️ Total is valid square root?';
+                } else {
+                    squareRootIndicator.textContent = '❌ Total is valid square root?';
+                }
+            });
+        });
         myForm.addEventListener("submit", (event) => {
             event.preventDefault();
 
@@ -303,6 +338,9 @@
                     isValid = false;
                 }
             });
+            // Calculate the total of all amount values
+            let totalAmount = amountValues.reduce((total, value) => total + parseInt(value), 0);
+
             formAmountGroups.forEach((formGroup, index) => {
                 const input = formGroup.querySelector("input");
                 const invalidFeedback = formGroup.querySelector(".invalid-feedback");
@@ -322,6 +360,17 @@
                     isValid = false;
                 }
             });
+
+            // Check if the total of all amount values is a square root only if all amount values are in the correct format
+            if (isValid && !Number.isInteger(Math.sqrt(totalAmount)) && totalAmount > 400) {
+                formAmountGroups.forEach((formGroup) => {
+                    const input = formGroup.querySelector("input");
+                    const invalidFeedback = formGroup.querySelector(".invalid-feedback");
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Total of amounts must be less than or equal to 400";
+                });
+                isValid = false;
+            }
             formTryGroups.forEach((formGroup, index) => {
                 const input = formGroup.querySelector("input");
                 const invalidFeedback = formGroup.querySelector(".invalid-feedback");
@@ -415,7 +464,7 @@
                 board.appendChild(row);
                 for (let j = 0; j < n; j++) {
                     const col = document.createElement('div');
-                    col.classList.add('col','no-gutters');
+                    col.classList.add('col', 'no-gutters');
 
                     const tile = document.createElement('div');
                     tile.classList.add('tile');
@@ -437,19 +486,19 @@
             }
             // Calculate the minimum tile size required to fit 20 tiles horizontally and vertically
             // Calculate the minimum tile size required to fit 20 tiles horizontally and vertically
-var minTileWidth = Math.ceil(screen.width / 20);
-var minTileHeight = Math.ceil(screen.height / 20);
+            var minTileWidth = Math.ceil(screen.width / 20);
+            var minTileHeight = Math.ceil(screen.height / 20);
 
-// Use the smaller of the two dimensions as the minimum tile size
-var minTileSize = Math.min(minTileWidth, minTileHeight);
-var minTileSize = Math.min(minTileSize-1,40)
+            // Use the smaller of the two dimensions as the minimum tile size
+            var minTileSize = Math.min(minTileWidth, minTileHeight);
+            var minTileSize = Math.min(minTileSize - 1, 40)
 
-// Set the tile size to the calculated minimum
-var tiles = document.querySelectorAll('.tile');
-for (var i = 0; i < tiles.length; i++) {
-    tiles[i].style.width = minTileSize + 'px';
-    tiles[i].style.height = minTileSize + 'px';
-}
+            // Set the tile size to the calculated minimum
+            var tiles = document.querySelectorAll('.tile');
+            for (var i = 0; i < tiles.length; i++) {
+                tiles[i].style.width = minTileSize + 'px';
+                tiles[i].style.height = minTileSize + 'px';
+            }
             let text1 = `Amount of Tries: ${m - pressedCount}`;
             document.getElementById('text1').innerHTML = text1;
 
