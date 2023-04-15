@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bootstrap Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <style>
+        .tile {
+            width: 25px;
+            height: 25px;
+            border: 1px solid black;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px;
+            background-color: #ffffff
+        }
+
+        .hover {
+            background-color: #55CDFC;
+        }
+
+        .pressed {
+            background-color: #f7a8b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="Page1">
+        <form>
+            <div class="d-flex justify-content-center align-items-center flex-column">
+
+                <div class="text-center">
+                    <h2 class="font-weight-bold">Admin Login</h2>
+                </div>
+                <div class="p-2 bg-white">
+                    <div class="form-group">
+                        <label for="inputString">Password:</label>
+                        <input type="text" class="form-control" id="inputString" placeholder="Enter password">
+                        <div class="invalid-feedback">Please enter a password</div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class='text-center'>
+                <button type="button" class="btn btn-primary" onclick="validate()">Validate</button>
+            </div>
+        </form>
+    </div>
+    <div id="Page2" style="display:none;">
+
+        <div class="text-center">
+            <h2 class="font-weight-bold">Enter parameters for Scratch Off</h2>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" style="height: 70vh;">
+
+            <form id="myForm">
+                <div class="p-2 bg-white">
+                    <label>Add/Remove Character</label>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-secondary" id="addButton">+</button>
+                        <button type="button" class="btn btn-secondary" id="removeButton">-</button>
+                    </div>
+                    <br></br>
+                    <label>Unique Characters for Scratch Off</label>
+                    <div id="inputCharacterGroup" class="d-flex" aria-labelledby="characterHelpBlock">
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" maxlength="1">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" maxlength="1">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" maxlength="1">
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                    </div>
+                    <div id="characterHelpBlock" class="form-text">
+                        The character fields must be a non-white space character and all fields should be unique.
+                    </div>
+
+                    <label>Currency Amounts for Each Character</label>
+                    <div id="inputCurrencyGroup" class="d-flex" aria-labelledby="currencyHelpBlock">
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div id="currencyHelpBlock" class="form-text">
+                        The currency fields must be a number greater than .01
+                    </div>
+
+                    <label>Amount of Each Character</label>
+                    <div id="inputAmountGroup" class="d-flex" aria-labelledby="amountHelpBlock">
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div id="amountHelpBlock" class="form-text">
+                        The amount fields should be a whole number greater than or equal to 1
+                    </div>
+
+                    <label>Seed to Generate Random Game</label>
+                    <div id="inputSeedGroup" class="d-flex" aria-labelledby="seedHelpBlock">
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                    </div>
+                    <div id="seeHelpBlock" class="form-text">
+                        The seed field should be a whole number greater than or equal to 0
+                    </div>
+
+                    <label>Amount of Tries to for Player</label>
+                    <div id="inputTryGroup" class="d-flex" aria-labelledby="tryHelpBlock">
+                        <div class="form-group">
+                            <input type="text" class="form-control">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div id="tryHelpBlock" class="form-text">
+                        The tries field should be a whole number greater than or equal to 1
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div id="Page3" class="mt-5" style="display:none;">
+        <div class="text-center">
+            <h2 class="font-weight-bold"></h2>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="d-flex flex-column justify-content-center align-items-center my-auto">
+                <div id="board" class="d-flex flex-wrap"></div>
+                <div class="container text-center">
+                    <p id="text1"></p>
+                    <p id="text2"></p>
+                    <p id="text3"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', function () {
+            let forms = document.getElementsByTagName('form');
+            for (let i = 0; i < forms.length; i++) {
+                forms[i].reset();
+            }
+        });
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0, len = str.length; i < len; i++) {
+                let chr = str.charCodeAt(i);
+                hash = (hash << 5) - hash + chr;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return hash;
+        }
+
+        function validate() {
+            const inputString = document.getElementById('inputString');
+            const inputStringVal = inputString.value;
+            const encodedString = btoa(inputStringVal);
+            if (encodedString === 'bHVuYQ==') {
+                console.log(true);
+                inputString.classList.remove('is-invalid');
+                toggleDiv('Page1');
+                toggleDiv('Page2');
+            } else {
+                console.log(false);
+                inputString.classList.add('is-invalid');
+                if (inputStringVal === '') {
+                    inputString.nextElementSibling.textContent = 'Please enter a password';
+                } else {
+                    inputString.nextElementSibling.textContent = 'Password does not match';
+                }
+            }
+        }
+    </script>
+    <script src="./script.js"></script>
+    <script>
+        const inputCharacterGroup = document.querySelector("#inputCharacterGroup");
+        const inputCurrencyGroup = document.querySelector("#inputCurrencyGroup");
+        const inputAmountGroup = document.querySelector("#inputAmountGroup");
+        const inputTriesGroup = document.querySelector("#inputTriesGroup");
+        const inputSeedsGroup = document.querySelector("#inputSeedGroup");
+
+        const addButton = document.querySelector("#addButton");
+        const removeButton = document.querySelector("#removeButton");
+        const myForm = document.querySelector("#myForm");
+
+        addButton.addEventListener("click", () => {
+            if (inputCharacterGroup.childElementCount >= 10) return;
+            const newCharFormGroup = document.createElement("div");
+            newCharFormGroup.classList.add("form-group");
+            const newCharInput = document.createElement("input");
+            newCharInput.type = "text";
+            newCharInput.classList.add("form-control");
+            newCharInput.maxLength = 1;
+            const newCharInvalidFeedback = document.createElement("div");
+            newCharInvalidFeedback.classList.add("invalid-feedback");
+            newCharFormGroup.appendChild(newCharInput);
+            newCharFormGroup.appendChild(newCharInvalidFeedback);
+            inputCharacterGroup.appendChild(newCharFormGroup);
+
+            const newCurrFormGroup = document.createElement("div");
+            newCurrFormGroup.classList.add("form-group");
+            const newCurrInput = document.createElement("input");
+            newCurrInput.type = "text";
+            newCurrInput.classList.add("form-control");
+            const newCurrInvalidFeedback = document.createElement("div");
+            newCurrInvalidFeedback.classList.add("invalid-feedback");
+            newCurrFormGroup.appendChild(newCurrInput);
+            newCurrFormGroup.appendChild(newCurrInvalidFeedback);
+            inputCurrencyGroup.appendChild(newCurrFormGroup);
+
+            const newAmtFormGroup = document.createElement("div");
+            newAmtFormGroup.classList.add("form-group");
+            const newAmtInput = document.createElement("input");
+            newAmtInput.type = "text";
+            newAmtInput.classList.add("form-control");
+            const newAmtInvalidFeedback = document.createElement("div");
+            newAmtInvalidFeedback.classList.add("invalid-feedback");
+            newAmtFormGroup.appendChild(newAmtInput);
+            newAmtFormGroup.appendChild(newAmtInvalidFeedback);
+            inputAmountGroup.appendChild(newAmtFormGroup);
+        });
+
+        removeButton.addEventListener("click", () => {
+            if (inputCharacterGroup.childElementCount <= 3) return;
+            inputCharacterGroup.removeChild(inputCharacterGroup.lastChild);
+            inputCurrencyGroup.removeChild(inputCurrencyGroup.lastChild);
+            inputAmountGroup.removeChild(inputAmountGroup.lastChild);
+        });
+
+        myForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const formCharacterGroups = [...inputCharacterGroup.querySelectorAll(".form-group")];
+            const formCurrencyGroups = [...inputCurrencyGroup.querySelectorAll(".form-group")];
+            const formAmountGroups = [...inputAmountGroup.querySelectorAll(".form-group")];
+
+            const formTryGroups = [...inputTryGroup.querySelectorAll(".form-group")];
+            const formSeedGroups = [...inputSeedGroup.querySelectorAll(".form-group")];
+            let isValid = true;
+
+            let characterValues = formCharacterGroups.map(formGroup => formGroup.querySelector("input").value.trim());
+            let currencyValues = formCurrencyGroups.map(formGroup => formGroup.querySelector("input").value.trim());
+            let amountValues = formAmountGroups.map(formGroup => formGroup.querySelector("input").value.trim());
+            let tryValues = formTryGroups.map(formGroup => formGroup.querySelector("input").value.trim());
+            let seedValues = formSeedGroups.map(formGroup => formGroup.querySelector("input").value.trim());
+
+            formCharacterGroups.forEach((formGroup, index) => {
+                const input = formGroup.querySelector("input");
+                const invalidFeedback = formGroup.querySelector(".invalid-feedback");
+                input.classList.remove("is-invalid");
+                invalidFeedback.textContent = "";
+                if (characterValues[index] === "") {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Text must not be whitespace";
+                    isValid = false;
+                } else if (characterValues.indexOf(characterValues[index]) !== index) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Character must be unique compared to other characters in the fields";
+                    isValid = false;
+                }
+            });
+            formCurrencyGroups.forEach((formGroup, index) => {
+                const input = formGroup.querySelector("input");
+                const invalidFeedback = formGroup.querySelector(".invalid-feedback");
+                input.classList.remove("is-invalid");
+                invalidFeedback.textContent = "";
+                if (currencyValues[index] === "") {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Missing a currency amount";
+                    isValid = false;
+                } if (isNaN(currencyValues[index]) || !currencyValues[index].toString().match(/^\d*(\.\d{1,2})?$/)) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be a currency amount";
+                    isValid = false;
+                } else if (parseFloat(currencyValues[index]) < 0.01) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be greater than or equal to 0.01";
+                    isValid = false;
+                }
+            });
+            formAmountGroups.forEach((formGroup, index) => {
+                const input = formGroup.querySelector("input");
+                const invalidFeedback = formGroup.querySelector(".invalid-feedback");
+                input.classList.remove("is-invalid");
+                invalidFeedback.textContent = "";
+                if (amountValues[index] === "") {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Missing a whole number";
+                    isValid = false;
+                } else if (isNaN(amountValues[index]) || !Number.isInteger(parseFloat(amountValues[index]))) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be a whole number";
+                    isValid = false;
+                } else if (parseInt(amountValues[index]) < 1) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be greater than or equal to 1";
+                    isValid = false;
+                }
+            });
+            formTryGroups.forEach((formGroup, index) => {
+                const input = formGroup.querySelector("input");
+                const invalidFeedback = formGroup.querySelector(".invalid-feedback");
+                input.classList.remove("is-invalid");
+                invalidFeedback.textContent = "";
+                if (tryValues[index] === "") {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Missing a whole number";
+                    isValid = false;
+                } else if (isNaN(tryValues[index]) || !Number.isInteger(parseFloat(tryValues[index]))) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be a whole number";
+                    isValid = false;
+                } else if (parseInt(tryValues[index]) < 1) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be greater than or equal to 1";
+                    isValid = false;
+                }
+            });
+            formSeedGroups.forEach((formGroup, index) => {
+                const input = formGroup.querySelector("input");
+                const invalidFeedback = formGroup.querySelector(".invalid-feedback");
+                input.classList.remove("is-invalid");
+                invalidFeedback.textContent = "";
+                if (seedValues[index] === "") {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Missing a whole number";
+                    isValid = false;
+                } else if (isNaN(seedValues[index]) || !Number.isInteger(parseFloat(seedValues[index]))) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be a whole number";
+                    isValid = false;
+                } else if (parseInt(seedValues[index]) < 0) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be greater than or equal to 0";
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) return;
+            toggleDiv('Page2');
+            console.log('before' + currencyValues);
+            generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues);
+            console.log('after' + currencyValues);
+            toggleDiv('Page3');
+        });
+
+    </script>
+
+
+    <script>
+        let matrix_str = '';
+        let matrix = [];
+        let n = 0; // number of rows and columns
+        let m = 0; // maximum number of tiles that can be pressed
+        let pressedCount = 0;
+        let selectedIndices = [];
+        let counts = {}; // dictionary with character keys and integer values
+        let character_list = [];
+        let amount_list = [];
+        let currency_list = []; // array of floats
+        function generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues) {
+
+            character_list = characterValues;
+            amount_list = amountValues;
+            currency_list = currencyValues;
+
+            matrix_str = generateRandomString(character_list, amount_list, seedValues[0]);
+            n = Math.floor(Math.sqrt(matrix_str.length)); // number of rows and columns
+            m = tryValues[0]; // maximum number of tiles that can be pressed
+            pressedCount = 0;
+            selectedIndices = [];
+            counts = character_list.reduce(function (result, key, index) {
+                result[key] = amount_list[index];
+                return result;
+            }, {});
+            found = character_list.reduce(function (result, key, index) {
+                result[key] = 0;
+                return result;
+            }, {});
+
+
+            const board = document.getElementById('board');
+            board.style.width = `${n * 34}px`;
+
+            matrix = stringToMatrix(matrix_str);
+
+
+
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    const tile = document.createElement('div');
+                    tile.classList.add('tile');
+                    tile.addEventListener('mouseover', hover);
+                    tile.addEventListener('mouseout', unhover);
+                    board.appendChild(tile);
+
+                    // create a closure to capture the row and column indices
+                    (function (row, col) {
+                        tile.addEventListener('click', function () {
+                            click.call(this, row, col);
+                        });
+                        tile.addEventListener('showAllTileTexts', function () {
+                            showAllTileTexts.call(this, row, col);
+                        });
+                    })(i, j);
+                }
+            }
+            let text1 = `Amount of Tries: ${m - pressedCount}`;
+            document.getElementById('text1').innerHTML = text1;
+
+            let text2 = `Remaining Characters: ` + Object.entries(counts).map(([value, count]) => ` ${value}: ${count}`).join('');
+            document.getElementById('text2').innerHTML = text2;
+
+            let text3 = 'Money Calculation: ' + currency_list.map((value, i) => `(${value} X ${Object.values(found)[i]})`).join(' + ') + ' = ' + `$${currency_list.reduce((acc, value, i) => acc + value * Object.values(found)[i], 0).toFixed(2)}`;
+            document.getElementById('text3').innerHTML = text3;
+        }
+
+        function hover() {
+            this.classList.add('hover');
+        }
+
+        function unhover() {
+            this.classList.remove('hover');
+        }
+        function stringToMatrix(s) {
+            let n = Math.floor(Math.sqrt(s.length));
+            let matrix = [];
+            for (let i = 0; i < s.length; i += n) {
+                matrix.push(s.slice(i, i + n).split(''));
+            }
+            return matrix;
+        }
+        function generateRandomString(characterList, characterAmounts, seed) {
+            let randomString = '';
+            for (let i = 0; i < characterList.length; i++) {
+                let append = characterList[i].repeat(characterAmounts[i]);
+                randomString += append;
+            }
+            let random = new Math.seedrandom(seed);
+            randomString = randomString.split('').sort(function () { return 0.5 - random(); }).join('');
+            return randomString;
+        }
+        function click(row, col) {
+            if (pressedCount < m) {
+
+                this.textContent = matrix[row][col];
+                selectedIndices.push([row, col]);
+                this.removeEventListener('mouseover', hover);
+                this.removeEventListener('mouseout', unhover);
+                this.classList.remove('hover');
+                this.classList.add('pressed');
+                pressedCount++;
+                counts[matrix[row][col]] -= 1;
+                found[matrix[row][col]] += 1;
+                let text1 = `Amount of Tries: ${m - pressedCount}`;
+                document.getElementById('text1').innerHTML = text1;
+
+                let text2 = `Remaining Characters: ` + Object.entries(counts).map(([value, count]) => ` ${value}: ${count}`).join('');
+                document.getElementById('text2').innerHTML = text2;
+
+                let text3 = 'Money Calculation: ' + currency_list.map((value, i) => `(${value} X ${Object.values(found)[i]})`).join(' + ') + ' = ' + `$${currency_list.reduce((acc, value, i) => acc + value * Object.values(found)[i], 0).toFixed(2)}`;
+                document.getElementById('text3').innerHTML = text3;
+
+                if (pressedCount == m) {
+                    disableAllTiles();
+                    const tiles = document.querySelectorAll('.tile');
+                    tiles.forEach(tile => {
+                        tile.dispatchEvent(new Event('showAllTileTexts'));
+                    });
+                    console.log(matrix);
+                    console.log(selectedIndices);
+                    generateXLSX(matrix, selectedIndices, character_list, amount_list, currency_list)
+                }
+            }
+        }
+
+        function disableAllTiles() {
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                tile.removeEventListener('click', click);
+                if (!tile.classList.contains('pressed')) {
+                    tile.style.backgroundColor = 'white';
+                }
+            });
+        }
+        function toggleDiv(id) {
+            var div = document.getElementById(id);
+            if (div.style.display === "none") {
+                div.style.display = "";
+            } else {
+                div.style.display = "none";
+            }
+        }
+        function showAllTileTexts(row, col) {
+            this.textContent = matrix[row][col];
+        }
+        async function generateXLSX(data, coordinates, characters, counts, values) {
+            // Load the required library
+            const ExcelJS = window.ExcelJS;
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Sheet1');
+
+            // Add the data to the worksheet
+            worksheet.getCell('A1').value = 'Board';
+            worksheet.getCell('A1').font = { bold: true };
+            data.forEach((row, rowIndex) => {
+                row.forEach((cell, cellIndex) => {
+                    worksheet.getCell(rowIndex + 2, cellIndex + 1).value = cell;
+                });
+            });
+
+            // Set the background color for the specified cells
+            coordinates.forEach(coord => {
+                worksheet.getCell(coord[0] + 2, coord[1] + 1).fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFF7A8B8' }
+                };
+            });
+
+            // Add the summary table to the worksheet
+            let startRow = data.length + 4;
+            worksheet.getCell(startRow, 2).value = 'Total';
+            worksheet.getCell(startRow, 2).font = { bold: true };
+            worksheet.getCell(startRow, 3).value = 'Found (F)';
+            worksheet.getCell(startRow, 3).font = { bold: true };
+            worksheet.getCell(startRow, 4).value = 'Value (V)';
+            worksheet.getCell(startRow, 4).font = { bold: true };
+            worksheet.getCell(startRow, 5).value = '(F * V)';
+            worksheet.getCell(startRow, 5).font = { bold: true };
+            worksheet.getCell(startRow, 6).value = 'Winnings';
+            worksheet.getCell(startRow, 6).font = { bold: true };
+            let sum = 0;
+            characters.forEach((char, index) => {
+                let row = startRow + index + 1;
+                worksheet.getCell(row, 1).value = char;
+                worksheet.getCell(row, 1).font = { bold: true };
+                worksheet.getCell(row, 2).value = counts[index];
+                let foundCount = coordinates.reduce((acc, [x, y]) => acc + (data[x][y] === char ? 1 : 0), 0);
+                worksheet.getCell(row, 3).value = foundCount;
+                worksheet.getCell(row, 4).value = values[index];
+                let winnings = foundCount * values[index];
+                worksheet.getCell(row, 5).value = winnings;
+                sum += worksheet.getCell(row, 5).value;
+            });
+            worksheet.getCell(startRow + 1, 6).value = sum;
+
+            // Generate the xlsx file and initiate download
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'output.xlsx';
+            link.click();
+        }
+    </script>
+
+
+</body>
+
+</html>
