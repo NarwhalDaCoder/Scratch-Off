@@ -190,18 +190,36 @@
 
         </div>
     </div>
+    <div id="Page4" style="display:none;">
+        <div class="text-center">
+            <h1 class="font-weight-bold">Invalid Link</h1>
+        </div>
+    </div>
     <script>
         window.addEventListener('load', () => {
             const params = new URLSearchParams(window.location.search);
+            const currentURL = window.location.href;
+            const cookies = Object.fromEntries(document.cookie.split('; ').map(c => c.split('=')));
+            const urls = cookies.urls ? JSON.parse(decodeURIComponent(cookies.urls)) : [];
+
             if (params.toString()) {
-                // Query string is present
-                const characterValues = JSON.parse(atob(params.get('characterValues')));
-                const currencyValues = JSON.parse(atob(params.get('currencyValues')));
-                const amountValues = JSON.parse(atob(params.get('amountValues')));
-                const tryValues = JSON.parse(atob(params.get('tryValues')));
-                const seedValues = JSON.parse(atob(params.get('seedValues')));
-                generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues);
-                toggleDiv('Page3');
+                if (urls.includes(currentURL)) {
+                    // The URL is present in the list of URLs
+                    toggleDiv('Page4');
+                } else {
+                    urls.push(currentURL);
+                    document.cookie = `urls=${encodeURIComponent(JSON.stringify(urls))}`;
+                    // Query string is present
+                    const characterValues = JSON.parse(atob(params.get('characterValues')));
+                    const currencyValues = JSON.parse(atob(params.get('currencyValues')));
+                    const amountValues = JSON.parse(atob(params.get('amountValues')));
+                    const tryValues = JSON.parse(atob(params.get('tryValues')));
+                    const seedValues = JSON.parse(atob(params.get('seedValues')));
+                    const timeValues = JSON.parse(atob(params.get('timeValues')));
+
+                    generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues,timeValues);
+                    toggleDiv('Page3');
+                }
             } else {
                 // No query string
                 toggleDiv('Page1');
@@ -481,7 +499,8 @@
                 currencyValues: btoa(JSON.stringify(currencyValues)),
                 amountValues: btoa(JSON.stringify(amountValues)),
                 tryValues: btoa(JSON.stringify(tryValues)),
-                seedValues: btoa(JSON.stringify(seedValues))
+                seedValues: btoa(JSON.stringify(seedValues)),
+                timeValues: btoa(JSON.stringify([Date.now()]))
             };
 
             const queryString = Object.entries(params)
@@ -511,11 +530,13 @@
         let amount_list = [];
         let currency_list = []; // array of floats
         let seed_list = [];//array of ints
-        function generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues) {
+        let time_list = [];
+        function generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues,timeValues) {
 
             character_list = characterValues;
             amount_list = amountValues;
             currency_list = currencyValues;
+            time_list = timeValues;
 
             matrix_str = generateRandomString(character_list, amount_list, seedValues[0]);
             n = Math.floor(Math.sqrt(matrix_str.length)); // number of rows and columns
@@ -643,7 +664,7 @@
                     });
                     console.log(matrix);
                     console.log(selectedIndices);
-                    generateXLSX(matrix, selectedIndices, character_list, amount_list, currency_list, seed_list, window.location.href)
+                    generateXLSX(matrix, selectedIndices, character_list, amount_list, currency_list, seed_list, window.location.href,time_list[0])
                 }
             }
         }
@@ -668,7 +689,7 @@
         function showAllTileTexts(row, col) {
             this.textContent = matrix[row][col];
         }
-        async function generateXLSX(data, coordinates, characters, counts, values, seeds, url) {
+        async function generateXLSX(data, coordinates, characters, counts, values, seeds, url,time) {
             // Load the required library
             const ExcelJS = window.ExcelJS;
             const workbook = new ExcelJS.Workbook();
@@ -729,11 +750,15 @@
             // Add the data to the worksheet
             worksheet.getCell('E1').value = tries;
 
-            worksheet.getCell('F1').value = 'URL:';
+            worksheet.getCell('G1').value = 'URL:';
+            worksheet.getCell('G1').font = { bold: true };
+            // Add the data to the worksheet
+            worksheet.getCell('H1').value = url;
+
+            worksheet.getCell('F1').value = 'UNIX time';
             worksheet.getCell('F1').font = { bold: true };
             // Add the data to the worksheet
-            worksheet.getCell('G1').value = url;
-
+            worksheet.getCell('G1').value = time;
             // Add the data to the worksheet
             worksheet.getCell(startRow + 1, 6).value = sum;
 
