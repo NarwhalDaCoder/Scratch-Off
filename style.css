@@ -3,6 +3,9 @@ body {
 	background-size: 400% 400%;
 	-webkit-animation: gradient 15s ease infinite;
 	        animation: gradient 15s ease infinite;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	height: 100vh;
 }
 
@@ -28,4 +31,23 @@ body {
 	100% {
 		background-position: 0% 50%;
 	}
+}
+.tile {
+	width: 25px;
+	height: 25px;
+	border: 1px solid black;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 4px;
+	background-color: #ffffff
+}
+
+.hover {
+	background-color: #55CDFC;
+}
+
+.pressed {
+	background-color: #f7a8b8;
 }

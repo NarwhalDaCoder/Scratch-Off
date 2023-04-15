@@ -12,34 +12,12 @@
     <link rel="stylesheet" href="./style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <style>
-        .tile {
-            width: 25px;
-            height: 25px;
-            border: 1px solid black;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 4px;
-            background-color: #ffffff
-        }
-
-        .hover {
-            background-color: #55CDFC;
-        }
-
-        .pressed {
-            background-color: #f7a8b8;
-        }
-    </style>
 </head>
 
 <body>
     <div id="Page1">
         <form>
             <div class="d-flex justify-content-center align-items-center flex-column">
-
                 <div class="text-center">
                     <h2 class="font-weight-bold">Admin Login</h2>
                 </div>
@@ -50,8 +28,6 @@
                         <div class="invalid-feedback">Please enter a password</div>
                     </div>
                 </div>
-
-
             </div>
             <div class='text-center'>
                 <button type="button" class="btn btn-primary" onclick="validate()">Validate</button>
@@ -63,7 +39,7 @@
         <div class="text-center">
             <h2 class="font-weight-bold">Enter parameters for Scratch Off</h2>
         </div>
-        <div class="d-flex justify-content-center align-items-center" style="height: 70vh;">
+        <div class="d-flex justify-content-center align-items-center">
 
             <form id="myForm">
                 <div class="p-2 bg-white">
@@ -163,7 +139,7 @@
         </div>
     </div>
 
-    <div id="Page3" class="mt-5" style="display:none;">
+    <div id="Page3" style="display:none;">
         <div class="text-center">
             <h2 class="font-weight-bold"></h2>
         </div>
