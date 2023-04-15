@@ -1,8 +1,8 @@
 body {
-	background: linear-gradient(-60deg, #55CDFC, #F7A8B8, #FFFFFF);
-	background-size: 400% 400%;
-	-webkit-animation: gradient 15s ease infinite;
-	        animation: gradient 15s ease infinite;
+	background: linear-gradient(-60deg,   #dbbce4, #f3cfd7,#f7e0ca,#f4f4f4,#d1dcfb,#d6f1df);
+	background-size: 300% 300%;
+	-webkit-animation: gradient 10s ease infinite;
+	        animation: gradient 10s ease infinite;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -61,5 +61,5 @@ body {
 }
 
 .pressed {
-	background-color: #f7a8b8;
+	background-color: #F7A8B8;
 }
