@@ -389,6 +389,11 @@
                     invalidFeedback.textContent = "Must be greater than or equal to 1";
                     isValid = false;
                 }
+                else if (parseInt(tryValues[index]) > totalAmount) {
+                    input.classList.add("is-invalid");
+                    invalidFeedback.textContent = "Must be less than total character amount";
+                    isValid = false;
+                }
             });
             formSeedGroups.forEach((formGroup, index) => {
                 const input = formGroup.querySelector("input");
@@ -460,18 +465,15 @@
 
             for (let i = 0; i < n; i++) {
                 const row = document.createElement('div');
-                row.classList.add('row', 'no-gutters');
+                row.classList.add('d-flex','flex-row','justify-content-center');
+
                 board.appendChild(row);
                 for (let j = 0; j < n; j++) {
-                    const col = document.createElement('div');
-                    col.classList.add('col', 'no-gutters');
-
                     const tile = document.createElement('div');
                     tile.classList.add('tile');
                     tile.addEventListener('mouseover', hover);
                     tile.addEventListener('mouseout', unhover);
-                    col.appendChild(tile);
-                    row.appendChild(col);
+                    row.appendChild(tile);
 
                     // create a closure to capture the row and column indices
                     (function (row, col) {
@@ -484,14 +486,16 @@
                     })(i, j);
                 }
             }
-            // Calculate the minimum tile size required to fit 20 tiles horizontally and vertically
-            // Calculate the minimum tile size required to fit 20 tiles horizontally and vertically
-            var minTileWidth = Math.ceil(screen.width / 20);
-            var minTileHeight = Math.ceil(screen.height / 20);
+            // Calculate the maximum tile size that fits within the screen dimensions
+    var maxTileWidth = Math.floor(screen.width / n);
+    var maxTileHeight = Math.floor(screen.height / n);
 
-            // Use the smaller of the two dimensions as the minimum tile size
-            var minTileSize = Math.min(minTileWidth, minTileHeight);
-            var minTileSize = Math.min(minTileSize - 1, 40)
+    var y = Math.floor((Math.min(screen.width,screen.height) / n) / (1 + (Math.min(screen.width,screen.height) - 360) * (1.436 - 1) / (1080 - 360)));
+
+    var maxTileSize = Math.min(Math.floor(screen.width / n), Math.floor(screen.height / n));
+
+    // Return the minimum of the maximum and desired tile sizes
+    minTileSize=  Math.min(y, maxTileSize);
 
             // Set the tile size to the calculated minimum
             var tiles = document.querySelectorAll('.tile');
