@@ -17,7 +17,7 @@
 
 <body>
     <div id="Page1">
-        <form>
+        <form id=formPage1>
             <div class="d-flex justify-content-center align-items-center flex-column">
                 <div class="text-center">
                     <h2 class="font-weight-bold">Admin Login</h2>
@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class='text-center'>
-                <button type="button" class="btn btn-primary" onclick="validate()">Validate</button>
+                <button type="submit" class="btn btn-primary">Validate</button>
             </div>
         </form>
     </div>
@@ -145,35 +145,23 @@
             <h2 class="font-weight-bold"></h2>
         </div>
 
-        <div class="d-flex justify-content-center align-items-center">
-            <div class="d-flex flex-column justify-content-center align-items-center my-auto">
-                <div id="board" class="d-flex flex-wrap"></div>
-                <div class="container text-center">
-                    <p id="text1"></p>
-                    <p id="text2"></p>
-                    <p id="text3"></p>
-                </div>
+        <div class="d-flex justify-content-center align-items-center flex-column">
+
+            <div id="board"></div>
+            <div class="container text-center">
+                <p id="text1"></p>
+                <p id="text2"></p>
+                <p id="text3"></p>
             </div>
+
         </div>
     </div>
     <script>
-        window.addEventListener('load', function () {
-            let forms = document.getElementsByTagName('form');
-            for (let i = 0; i < forms.length; i++) {
-                forms[i].reset();
-            }
-        });
-        function hashCode(str) {
-            let hash = 0;
-            for (let i = 0, len = str.length; i < len; i++) {
-                let chr = str.charCodeAt(i);
-                hash = (hash << 5) - hash + chr;
-                hash |= 0; // Convert to 32bit integer
-            }
-            return hash;
-        }
+        const formPage1 = document.querySelector("#formPage1");
+        formPage1.addEventListener('submit', function (event) {
+            event.preventDefault(); // prevent the default form submission behavior
 
-        function validate() {
+            // handle form submission here
             const inputString = document.getElementById('inputString');
             const inputStringVal = inputString.value;
             const encodedString = btoa(inputStringVal);
@@ -191,6 +179,21 @@
                     inputString.nextElementSibling.textContent = 'Password does not match';
                 }
             }
+        });
+        window.addEventListener('load', function () {
+            let forms = document.getElementsByTagName('form');
+            for (let i = 0; i < forms.length; i++) {
+                forms[i].reset();
+            }
+        });
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0, len = str.length; i < len; i++) {
+                let chr = str.charCodeAt(i);
+                hash = (hash << 5) - hash + chr;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return hash;
         }
     </script>
     <script src="./script.js"></script>
@@ -402,19 +405,24 @@
 
 
             const board = document.getElementById('board');
-            board.style.width = `${n * 34}px`;
+            board.classList.add('container-fluid');
 
             matrix = stringToMatrix(matrix_str);
 
-
-
             for (let i = 0; i < n; i++) {
+                const row = document.createElement('div');
+                row.classList.add('row', 'no-gutters');
+                board.appendChild(row);
                 for (let j = 0; j < n; j++) {
+                    const col = document.createElement('div');
+                    col.classList.add('col','no-gutters');
+
                     const tile = document.createElement('div');
                     tile.classList.add('tile');
                     tile.addEventListener('mouseover', hover);
                     tile.addEventListener('mouseout', unhover);
-                    board.appendChild(tile);
+                    col.appendChild(tile);
+                    row.appendChild(col);
 
                     // create a closure to capture the row and column indices
                     (function (row, col) {
@@ -427,6 +435,21 @@
                     })(i, j);
                 }
             }
+            // Calculate the minimum tile size required to fit 20 tiles horizontally and vertically
+            // Calculate the minimum tile size required to fit 20 tiles horizontally and vertically
+var minTileWidth = Math.ceil(screen.width / 20);
+var minTileHeight = Math.ceil(screen.height / 20);
+
+// Use the smaller of the two dimensions as the minimum tile size
+var minTileSize = Math.min(minTileWidth, minTileHeight);
+var minTileSize = Math.min(minTileSize-1,40)
+
+// Set the tile size to the calculated minimum
+var tiles = document.querySelectorAll('.tile');
+for (var i = 0; i < tiles.length; i++) {
+    tiles[i].style.width = minTileSize + 'px';
+    tiles[i].style.height = minTileSize + 'px';
+}
             let text1 = `Amount of Tries: ${m - pressedCount}`;
             document.getElementById('text1').innerHTML = text1;
 
@@ -444,6 +467,7 @@
         function unhover() {
             this.classList.remove('hover');
         }
+
         function stringToMatrix(s) {
             let n = Math.floor(Math.sqrt(s.length));
             let matrix = [];
