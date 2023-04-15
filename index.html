@@ -16,7 +16,7 @@
 </head>
 
 <body>
-    <div id="Page1">
+    <div id="Page1" style="display:none;">
         <form id=formPage1>
             <div class="d-flex justify-content-center align-items-center flex-column">
                 <div class="text-center">
@@ -137,9 +137,36 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
                 </div>
-
+                <div class="modal" id="exampleModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Url Link for game</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="copyButton">Copy to Clipboard</button>
+                            </div>
+                            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+                                <div class="toast-header">
+                                    <strong class="me-auto">Notification</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    Copied to clipboard!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </form>
         </div>
     </div>
@@ -160,6 +187,33 @@
 
         </div>
     </div>
+    <script>
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.toString()) {
+                // Query string is present
+                const characterValues = JSON.parse(atob(params.get('characterValues')));
+                const currencyValues = JSON.parse(atob(params.get('currencyValues')));
+                const amountValues = JSON.parse(atob(params.get('amountValues')));
+                const tryValues = JSON.parse(atob(params.get('tryValues')));
+                const seedValues = JSON.parse(atob(params.get('seedValues')));
+                generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues);
+                toggleDiv('Page3');
+            } else {
+                // No query string
+                toggleDiv('Page1');
+            }
+        });
+        document.querySelector('#copyButton').addEventListener('click', () => {
+            // Copy text to clipboard
+            const text = document.querySelector('#exampleModal .modal-body p').textContent;
+            navigator.clipboard.writeText(text);
+
+            // Show Toast
+            const toast = new bootstrap.Toast(document.querySelector('.toast'));
+            toast.show();
+        });
+    </script>
     <script>
         const formPage1 = document.querySelector("#formPage1");
         formPage1.addEventListener('submit', function (event) {
@@ -414,13 +468,29 @@
                     isValid = false;
                 }
             });
-
+            
             if (!isValid) return;
-            toggleDiv('Page2');
-            console.log('before' + currencyValues);
-            generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues);
-            console.log('after' + currencyValues);
-            toggleDiv('Page3');
+
+            
+    
+            const params = {
+                characterValues: btoa(JSON.stringify(characterValues)),
+                currencyValues: btoa(JSON.stringify(currencyValues)),
+                amountValues: btoa(JSON.stringify(amountValues)),
+                tryValues: btoa(JSON.stringify(tryValues)),
+                seedValues: btoa(JSON.stringify(seedValues))
+            };
+
+            const queryString = Object.entries(params)
+                .map(([key, value]) => `${key}=${value}`)
+                .join('&');
+
+            const baseUrl = window.location.href.split('?')[0];
+            const url = `${baseUrl}?${queryString}`;
+            document.querySelector('#exampleModal .modal-body p').textContent = url;
+
+            const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
+            modal.show();
         });
 
     </script>
@@ -465,7 +535,7 @@
 
             for (let i = 0; i < n; i++) {
                 const row = document.createElement('div');
-                row.classList.add('d-flex','flex-row','justify-content-center');
+                row.classList.add('d-flex', 'flex-row', 'justify-content-center');
 
                 board.appendChild(row);
                 for (let j = 0; j < n; j++) {
@@ -487,15 +557,15 @@
                 }
             }
             // Calculate the maximum tile size that fits within the screen dimensions
-    var maxTileWidth = Math.floor(screen.width / n);
-    var maxTileHeight = Math.floor(screen.height / n);
+            var maxTileWidth = Math.floor(screen.width / n);
+            var maxTileHeight = Math.floor(screen.height / n);
 
-    var y = Math.floor((Math.min(screen.width,screen.height) / n) / (1 + (Math.min(screen.width,screen.height) - 360) * (1.436 - 1) / (1080 - 360)));
+            var y = Math.floor((Math.min(screen.width, screen.height) / n) / (1 + (Math.min(screen.width, screen.height) - 360) * (1.436 - 1) / (1080 - 360)));
 
-    var maxTileSize = Math.min(Math.floor(screen.width / n), Math.floor(screen.height / n));
+            var maxTileSize = Math.min(Math.floor(screen.width / n), Math.floor(screen.height / n));
 
-    // Return the minimum of the maximum and desired tile sizes
-    minTileSize=  Math.min(y, maxTileSize);
+            // Return the minimum of the maximum and desired tile sizes
+            minTileSize = Math.min(y, maxTileSize);
 
             // Set the tile size to the calculated minimum
             var tiles = document.querySelectorAll('.tile');
