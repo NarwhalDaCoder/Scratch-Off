@@ -148,25 +148,28 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p></p>
+                                <div aria-live="polite" aria-atomic="true"
+                                    class="d-flex flex-column justify-content-center align-items-center">
+                                    <div class="toast " role="alert" aria-live="assertive" aria-atomic="true"
+                                        data-bs-delay="2000">
+                                        <div class="toast-body">
+                                            Copied to clipboard!
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="d-flex flex-column justify-content-center align-items-center">
+                                    <p></p>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary" id="copyButton">Copy to Clipboard</button>
                             </div>
-                            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
-                                <div class="toast-header">
-                                    <strong class="me-auto">Notification</strong>
-                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                                </div>
-                                <div class="toast-body">
-                                    Copied to clipboard!
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
-                
+
             </form>
         </div>
     </div>
@@ -468,11 +471,11 @@
                     isValid = false;
                 }
             });
-            
+
             if (!isValid) return;
 
-            
-    
+
+
             const params = {
                 characterValues: btoa(JSON.stringify(characterValues)),
                 currencyValues: btoa(JSON.stringify(currencyValues)),
@@ -507,6 +510,7 @@
         let character_list = [];
         let amount_list = [];
         let currency_list = []; // array of floats
+        let seed_list = [];//array of ints
         function generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues) {
 
             character_list = characterValues;
@@ -518,6 +522,7 @@
             m = tryValues[0]; // maximum number of tiles that can be pressed
             pressedCount = 0;
             selectedIndices = [];
+            seed_list = seedValues;
             counts = character_list.reduce(function (result, key, index) {
                 result[key] = amount_list[index];
                 return result;
@@ -638,7 +643,7 @@
                     });
                     console.log(matrix);
                     console.log(selectedIndices);
-                    generateXLSX(matrix, selectedIndices, character_list, amount_list, currency_list)
+                    generateXLSX(matrix, selectedIndices, character_list, amount_list, currency_list, seed_list, window.location.href)
                 }
             }
         }
@@ -663,7 +668,7 @@
         function showAllTileTexts(row, col) {
             this.textContent = matrix[row][col];
         }
-        async function generateXLSX(data, coordinates, characters, counts, values) {
+        async function generateXLSX(data, coordinates, characters, counts, values, seeds, url) {
             // Load the required library
             const ExcelJS = window.ExcelJS;
             const workbook = new ExcelJS.Workbook();
@@ -672,6 +677,11 @@
             // Add the data to the worksheet
             worksheet.getCell('A1').value = 'Board';
             worksheet.getCell('A1').font = { bold: true };
+            // Add the data to the worksheet
+            worksheet.getCell('B1').value = 'Seed:';
+            worksheet.getCell('B1').font = { bold: true };
+            // Add the data to the worksheet
+            worksheet.getCell('C1').value = seeds[0];
             data.forEach((row, rowIndex) => {
                 row.forEach((cell, cellIndex) => {
                     worksheet.getCell(rowIndex + 2, cellIndex + 1).value = cell;
@@ -700,18 +710,31 @@
             worksheet.getCell(startRow, 6).value = 'Winnings';
             worksheet.getCell(startRow, 6).font = { bold: true };
             let sum = 0;
+            let tries = 0;
             characters.forEach((char, index) => {
                 let row = startRow + index + 1;
                 worksheet.getCell(row, 1).value = char;
                 worksheet.getCell(row, 1).font = { bold: true };
                 worksheet.getCell(row, 2).value = counts[index];
                 let foundCount = coordinates.reduce((acc, [x, y]) => acc + (data[x][y] === char ? 1 : 0), 0);
+                tries += foundCount;
                 worksheet.getCell(row, 3).value = foundCount;
                 worksheet.getCell(row, 4).value = values[index];
                 let winnings = foundCount * values[index];
                 worksheet.getCell(row, 5).value = winnings;
                 sum += worksheet.getCell(row, 5).value;
             });
+            worksheet.getCell('D1').value = 'Tries:';
+            worksheet.getCell('D1').font = { bold: true };
+            // Add the data to the worksheet
+            worksheet.getCell('E1').value = tries;
+
+            worksheet.getCell('F1').value = 'URL:';
+            worksheet.getCell('F1').font = { bold: true };
+            // Add the data to the worksheet
+            worksheet.getCell('G1').value = url;
+
+            // Add the data to the worksheet
             worksheet.getCell(startRow + 1, 6).value = sum;
 
             // Generate the xlsx file and initiate download
