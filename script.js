@@ -1,4 +1,4 @@
-const azure = 'https://scratchoff.azurewebsites.net';
+const azure = 'http://localhost:7071/api/hello';
 const baseUrl = window.location.href
 window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
