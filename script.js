@@ -1,29 +1,43 @@
-
+const azure = 'http://localhost:7071/api/hello';
+const baseUrl = window.location.href
 window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
-    const currentURL = window.location.href;
-    const cookies = Object.fromEntries(document.cookie.split('; ').map(c => c.split('=')));
-    const urls = cookies.urls ? JSON.parse(decodeURIComponent(cookies.urls)) : [];
 
     if (params.toString()) {
-        if (urls.includes(currentURL)) {
-            // The URL is present in the list of URLs
-            toggleDiv('Page4');
-        } else {
-            urls.push(currentURL);
-            document.cookie = `urls=${encodeURIComponent(JSON.stringify(urls))}`;
-            // Query string is present
-            const characterValues = JSON.parse(atob(params.get('characterValues')));
-            const currencyValues = JSON.parse(atob(params.get('currencyValues')));
-            const amountValues = JSON.parse(atob(params.get('amountValues')));
-            const tryValues = JSON.parse(atob(params.get('tryValues')));
-            const seedValues = JSON.parse(atob(params.get('seedValues')));
-            const timeValues = JSON.parse(atob(params.get('timeValues')));
-            const nameValues = JSON.parse(atob(params.get('nameValues')));
 
-            generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues, timeValues, nameValues);
-            toggleDiv('Page3');
-        }
+
+        const id = params.get('id');
+        fetch(azure, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ id })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (Object.keys(data).length === 0) {
+                    // Handle the case where the data is an empty object
+                    console.log('Invalid ID');
+                    toggleDiv('Page4')
+                } else {
+                    // Handle the case where the data is not an empty object
+                    const characterValues = data.characterValues;
+                    const currencyValues = data.currencyValues;
+                    const amountValues = data.amountValues;
+                    const tryValues = data.tryValues;
+                    const seedValues = data.seedValues;
+                    const timeValues = data.timeValues;
+                    const nameValues = data.nameValues;
+
+                    generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues, timeValues, nameValues);
+                }
+            })
+            .catch(error => console.error(error));
+        toggleDiv('Page3');
+
     } else {
         // No query string
         toggleDiv('Page1');
@@ -309,28 +323,38 @@ myForm.addEventListener("submit", (event) => {
 
     if (!isValid) return;
 
-
-
-    const params = {
-        characterValues: btoa(JSON.stringify(characterValues)),
-        currencyValues: btoa(JSON.stringify(currencyValues)),
-        amountValues: btoa(JSON.stringify(amountValues)),
-        tryValues: btoa(JSON.stringify(tryValues)),
-        seedValues: btoa(JSON.stringify(seedValues)),
-        timeValues: btoa(JSON.stringify([Date.now()])),
-        nameValues: btoa(JSON.stringify(nameValues))
+    const data = {
+        characterValues: characterValues,
+        currencyValues: currencyValues,
+        amountValues: amountValues,
+        tryValues: tryValues,
+        seedValues: seedValues,
+        timeValues: [Date.now()],
+        nameValues: nameValues
     };
+    let id = 0;
+    console.log(JSON.stringify(data));
+    fetch(azure, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            id = data.id;
+            const return_url = `${baseUrl}?id=${id}`;
+            document.querySelector('#exampleModal .modal-body p').textContent = return_url;
 
-    const queryString = Object.entries(params)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
+            const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
+            modal.show();
+        })
+        .catch(error => console.error(error));
 
-    const baseUrl = window.location.href.split('?')[0];
-    const url = `${baseUrl}?${queryString}`;
-    document.querySelector('#exampleModal .modal-body p').textContent = url;
 
-    const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
-    modal.show();
 });
 
 let matrix_str = '';
@@ -576,46 +600,38 @@ async function generateXLSX(data, coordinates, characters, counts, values, seeds
     worksheet.getCell(startRow + 1, 6).value = sum;
 
 
-
+    const filename = name+'.xlsx'
     // Generate the xlsx file
     const buffer = await workbook.xlsx.writeBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-
-    // Create the email data
-    const subject = name.trim() + ' Scratch Off Results';
-    const filename = name.replace(/\s/g, "_").trim() + '.xlsx';
-    const emailData = {
-        SecureToken: "9090cf75-f859-47e8-8fff-a9d02134c140",
-        To: 'scratchoff_smpt_service@outlook.com',
-        From: 'scratchoff_smpt_service@outlook.com',
-        EnvelopeFrom: 'scratchoff_smpt_service@outlook.com',
-        Subject: subject,
-        Body: `The attached file belongs to ${name}.`,
-        Attachments: [
-            {
-                name: filename,
-                data: base64
-            }
-        ]
+    const xlsx_data = {
+        filename: filename,
+        filedata: base64
     };
 
-    // Send the email using the SmtpJS send method
-    setTimeout(() => {
-        // code to execute after 1 second
-    }, 1000);
-    Email.send(emailData).then(message => {
-        if (message === 'OK') {
+    fetch(azure, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(xlsx_data)
+    }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (Object.keys(data).length != 0) {
+                // Handle the case where the data is an empty object
+                console.log('Invalid ID');
+                if (data.emailSent === true) {
 
-            alert('Game has been sent');
-        }
-    });
-    // Generate the xlsx file and initiate download
-    //const buffer = await workbook.xlsx.writeBuffer();
-    //const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    //const link = document.createElement('a');
-    //link.href = window.URL.createObjectURL(blob);
-    //link.download = 'output.xlsx';
-    //link.click();
+                    alert('Game has been sent');
+                }
+            }
+            else {
+                alert('Failed to send game');
+            }
+        })
+        .catch(error => console.error(error));
 }
 
 
