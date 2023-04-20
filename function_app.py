@@ -18,7 +18,7 @@ DATABASE_ID = config.settings["database_id"]
 CONTAINER_ID = config.settings["container_id"]
 EMAIL = config.settings["email"]
 PASSWORD = config.settings["password"]
-
+ADMIN_PASSWORD = config.settings["admin_password"]
 app = func.FunctionApp()
 
 # Learn more at aka.ms/pythonprogrammingmodel
@@ -38,9 +38,11 @@ def scratch_off(req: func.HttpRequest) -> func.HttpResponse:
         return response
     req_body = req.get_json()
     id_value = req_body.get('id')
+    password_value = req_body.get('password')
     filename = req_body.get('filename')
+    char_values = req_body.get('characterValues')
     response = None
-    if not id_value and not filename:
+    if char_values and (password_value and password_value == ADMIN_PASSWORD):
         try:
             logging.info("Python HTTP trigger function processed a game creation request")
             client = cosmos_client.CosmosClient(HOST, {'masterKey': MASTER_KEY}, user_agent="CosmosDBPythonQuickstart", user_agent_overwrite=True)
@@ -83,6 +85,12 @@ def scratch_off(req: func.HttpRequest) -> func.HttpResponse:
         except Exception:
             response_data = {"invalidID": True}
             response = func.HttpResponse(body=json.dumps(response_data), status_code=200)
+    elif password_value:
+        logging.info("Python HTTP trigger function processed a admin verification")
+        item = {"isAdmin":False}
+        if password_value == ADMIN_PASSWORD:
+            item = {"isAdmin":True}
+        response = func.HttpResponse(body=json.dumps(item) , status_code=200)
     else:
         logging.info("Python HTTP trigger function processed a game email save request")
         #logging.info("Python HTTP trigger function {} ".format(req_body.get('filedata')))
