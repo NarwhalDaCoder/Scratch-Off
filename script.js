@@ -1,5 +1,6 @@
 const azure = 'https://scratchfunc.azurewebsites.net/api/hello?code=a-EgtsXXhH_SW7erd1bjj58lxoUzboe4JsLFNkVmdfWUAzFuIHz5GQ==';
 const baseUrl = window.location.href
+let globalPassword = "";
 window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
 
@@ -31,7 +32,7 @@ window.addEventListener('load', () => {
                     const seedValues = data.seedValues;
                     const timeValues = data.timeValues;
                     const nameValues = data.nameValues;
-        
+
                     generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues, timeValues, nameValues);
                 }
             })
@@ -60,24 +61,39 @@ formPage1.addEventListener('submit', function (event) {
     // handle form submission here
     const inputString = document.getElementById('inputString');
     const inputStringVal = inputString.value;
-    const encodedString = btoa(inputStringVal);
-    if (encodedString === 'bHVuYQ==') {
-        console.log(true);
-        inputString.classList.remove('is-invalid');
-        toggleDiv('Page1');
-        toggleDiv('Page2');
-        let seedGroup = document.querySelector("#inputSeedGroup");
-        let seedElement = seedGroup.querySelector("input");
-        seedElement.value = Date.now().toString();
-    } else {
-        console.log(false);
-        inputString.classList.add('is-invalid');
-        if (inputStringVal === '') {
-            inputString.nextElementSibling.textContent = 'Please enter a password';
-        } else {
-            inputString.nextElementSibling.textContent = 'Password does not match';
-        }
-    }
+    const passwordJSON = { "password": inputStringVal }
+    fetch(azure, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(passwordJSON)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (Object.keys(data).length === 0 || data.isAdmin === true) {
+                // Handle the case where the data is an empty object or has an invalidID key set to true
+                globalPassword = inputStringVal;
+                console.log(true);
+                inputString.classList.remove('is-invalid');
+                toggleDiv('Page1');
+                toggleDiv('Page2');
+                let seedGroup = document.querySelector("#inputSeedGroup");
+                let seedElement = seedGroup.querySelector("input");
+                seedElement.value = Date.now().toString();
+            } else {
+                console.log(false);
+                inputString.classList.add('is-invalid');
+                if (inputStringVal === '') {
+                    inputString.nextElementSibling.textContent = 'Please enter a password';
+                } else {
+                    inputString.nextElementSibling.textContent = 'Password does not match';
+                }
+            }
+        })
+        .catch(error => console.error(error));
 });
 window.addEventListener('load', function () {
     let forms = document.getElementsByTagName('form');
@@ -330,7 +346,8 @@ myForm.addEventListener("submit", (event) => {
         tryValues: tryValues,
         seedValues: seedValues,
         timeValues: [Date.now()],
-        nameValues: nameValues
+        nameValues: nameValues,
+        password: globalPassword
     };
     let id = 0;
     console.log(JSON.stringify(data));
@@ -600,7 +617,7 @@ async function generateXLSX(data, coordinates, characters, counts, values, seeds
     worksheet.getCell(startRow + 1, 6).value = sum;
 
 
-    const filename = name+'.xlsx'
+    const filename = name + '.xlsx'
     // Generate the xlsx file
     const buffer = await workbook.xlsx.writeBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
