@@ -81,7 +81,8 @@ def scratch_off(req: func.HttpRequest) -> func.HttpResponse:
                 response_data = item
             response = func.HttpResponse(body=json.dumps(response_data), status_code=200)
         except Exception:
-            print("ohno")
+            response_data = {"invalidID": True}
+            response = func.HttpResponse(body=json.dumps(response_data), status_code=200)
     else:
         logging.info("Python HTTP trigger function processed a game email save request")
         #logging.info("Python HTTP trigger function {} ".format(req_body.get('filedata')))
