@@ -1,4 +1,4 @@
-const azure = 'https://scratchfunc.azurewebsites.net/api/hello?code=onBmQdpNDeC5kyf72UyI73JEbbFXPEd3l6OLn1McTIDOAzFuz8MxrA%3D%3D';
+const azure = 'https://scratchfunc.azurewebsites.net/api/hello?code=a-EgtsXXhH_SW7erd1bjj58lxoUzboe4JsLFNkVmdfWUAzFuIHz5GQ==';
 const baseUrl = window.location.href
 window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
@@ -18,8 +18,8 @@ window.addEventListener('load', () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                if (Object.keys(data).length === 0) {
-                    // Handle the case where the data is an empty object
+                if (Object.keys(data).length === 0 || data.invalidID === true) {
+                    // Handle the case where the data is an empty object or has an invalidID key set to true
                     console.log('Invalid ID');
                     toggleDiv('Page4')
                 } else {
@@ -31,7 +31,7 @@ window.addEventListener('load', () => {
                     const seedValues = data.seedValues;
                     const timeValues = data.timeValues;
                     const nameValues = data.nameValues;
-
+        
                     generateGame(characterValues, currencyValues, amountValues, tryValues, seedValues, timeValues, nameValues);
                 }
             })
