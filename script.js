@@ -1,4 +1,4 @@
-const azure = 'https://scratchoff.azurewebsites.net';
+const azure = 'https://scratchfunc.azurewebsites.net/api/hello?code=onBmQdpNDeC5kyf72UyI73JEbbFXPEd3l6OLn1McTIDOAzFuz8MxrA%3D%3D';
 const baseUrl = window.location.href
 window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
