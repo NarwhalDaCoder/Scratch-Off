@@ -1,4 +1,4 @@
-const azure = 'https://scratchfunc.azurewebsites.net/api/hello?code=ktG47SDpIGUYmIHQku-sZSShLt-xxupxHokhVDK-WpfOAzFuWSfy6Q==';
+const azure = 'https://scratchfunc.azurewebsites.net/api/hello?code=accessGranted';
 const baseUrl = window.location.href
 let globalPassword = "";
 window.addEventListener('load', () => {
