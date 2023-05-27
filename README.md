@@ -20,6 +20,7 @@ contains these files in the directory where server files are stored and run from
 # Limitations
 Python version does not have a user friendly method to submit information to generate the game
 Python version requires users to have access to run python scripts or executables
+
 HTML version uses third party service(ElasticJS) to send emails, leading to the emails for the game results
 being detected as spam.
 HTML version generates links that can be modified by savvy users, as they are encrypted/decrypted with Base64,
