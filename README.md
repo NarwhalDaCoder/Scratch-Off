@@ -12,5 +12,3 @@ and use either VSCode  Azure extension or Azure Portal to publish the zip of the
 to the cloud.
 
 # Limitations
-Designed for screen sizes with heights at a minimum of 360px
-Currently limited to games containing a 20 x 20 board.
