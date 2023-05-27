@@ -1,6 +1,16 @@
 # Scratch-Off
 Scratch Off Lottery Card using SPA website with a Serverless Backend
+
+# Repository Contents
 Master branch contains previous version using Python for a GUI based Scratch Off game as well as deprecated site
 Cloud Branch contains current version of site hosted on the github pages, accessible only to admins, and users with the proper links to scratch off games
 Azure branch contains function that needs to be pushed to Azure Functions to allow the website to generate and track
 games, but also send the results of games to a dedicated email.
+
+# To run Python Version Locally
+Python function can be run directly with a Python installation, or frozen using Pyinstaller with the command
+Pyinstaller /path/to/yourscript.py
+
+# Limitations
+Python version does not have a user friendly method to submit information to generate the game
+Python version requires users to have access to run python scripts or executables
