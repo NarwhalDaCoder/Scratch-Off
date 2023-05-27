@@ -10,3 +10,7 @@ will allow you to locally test the API.
 In the Azure Portal, create a Serverless linux based function, 
 and use either VSCode  Azure extension or Azure Portal to publish the zip of the repository
 to the cloud.
+
+# Limitations
+Designed for screen sizes with heights at a minimum of 360px
+Currently limited to games containing a 20 x 20 board.
